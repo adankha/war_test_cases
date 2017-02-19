@@ -63,7 +63,7 @@ async def client(host, port, loop, testcase):
 
 
         if testcase == 'tc1':
-            SUCCESS = "Test result is TBD..."
+            SUCCESS = "Test should NOT trigger an error"
             # print('TESTING: Randomizing client cards then sending back client')
             # print('Expected: Successful (unless Prof. Kanich says otherwise)')
             shuffle_cards = []
@@ -244,6 +244,17 @@ async def client(host, port, loop, testcase):
                 elif result[1] == Result.LOSE.value:
                     myscore -= 1
 
+        if testcase == 'tc9':
+            SUCCESS = "Test should NOT trigger an error"
+            for card in card_msg[1:]:
+                writer.write(bytes([Command.PLAYCARD.value]))
+                await asyncio.sleep(.25)
+                writer.write(bytes([card]))
+                result = await reader.readexactly(2)
+                if result[1] == Result.WIN.value:
+                    myscore += 1
+                elif result[1] == Result.LOSE.value:
+                    myscore -= 1
 
         if myscore > 0:
             result = "won"
